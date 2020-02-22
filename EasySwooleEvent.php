@@ -3,10 +3,13 @@ namespace EasySwoole\EasySwoole;
 
 use App\Spider\ConsumeTest;
 use App\Spider\ProductTest;
+use App\Spider\RedisQueue;
 use EasySwoole\EasySwoole\Swoole\EventRegister;
 use EasySwoole\EasySwoole\AbstractInterface\Event;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
+use EasySwoole\Redis\Config\RedisConfig;
+use EasySwoole\RedisPool\Redis;
 use Spider\Config\Config;
 use Spider\Spider;
 
@@ -19,11 +22,6 @@ class EasySwooleEvent implements Event
         date_default_timezone_set('Asia/Shanghai');
     }
 
-    public function test()
-    {
-
-    }
-
     public static function mainServerCreate(EventRegister $register)
     {
         // TODO: Implement mainServerCreate() method.
@@ -31,8 +29,9 @@ class EasySwooleEvent implements Event
             ->setStartUrl('https://www.doutula.com/article/detail/1704295')
             ->setProduct(new ProductTest())
             ->setConsume(new ConsumeTest())
-            ->setQueueType(Config::QUEUE_TYPE_FAST_CACHE)
+            ->setQueueType(Config::QUEUE_TYPE_REDIS)
             ->setProductCoroutineNum(1)
+            ->setMainHost('')
             ->setConsumeCoroutineNum(1);
         Spider::getInstance()
             ->setConfig($config)

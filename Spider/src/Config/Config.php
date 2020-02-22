@@ -47,6 +47,9 @@ class Config
     // 分布式时指定一台机器为开始机器
     protected $mainHost;
 
+    // 队列配置
+    protected $queueConfig;
+
     public const QUEUE_TYPE_FAST_CACHE = 1;
     public const QUEUE_TYPE_REDIS = 2;
     public const QUEUE_TYPE_RABBITMQ = 3;
@@ -229,6 +232,24 @@ class Config
     public function setMainHost($mainHost): Config
     {
         $this->mainHost = $mainHost;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getQueueConfig()
+    {
+        return $this->queueConfig;
+    }
+
+    /**
+     * @param mixed $queueConfig
+     * @return Config
+     */
+    public function setQueueConfig($queueConfig): Config
+    {
+        $this->queueConfig = $queueConfig;
         return $this;
     }
 }

@@ -23,10 +23,11 @@ class ProductProcess extends AbstractProcess
 
             $config = Config::getInstance();
 
-            // 区分是分布式或单机
+            // 区分分布式和单机
             $mainHost = $config->getMainHost();
             if (empty($mainHost)) {
                 $config->getQueue()->push($config->getProductQueueKey(), $config->getStartUrl());
+                $config->getQueue()->pop($config->getProductQueueKey());
             } else {
                 $ip = gethostbyname(gethostname());
                 if (!empty($ip) && $config->getMainHost() === $ip) {
@@ -37,7 +38,6 @@ class ProductProcess extends AbstractProcess
             for ($i=0;$i<$config->getProductCoroutineNum();$i++) {
                 go(function () use ($config){
                     while (true) {
-
                         $url = $config->getQueue()->pop($config->getProductQueueKey());
                         if (empty($url)) {
                             Coroutine::sleep(0.1);

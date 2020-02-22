@@ -10,10 +10,13 @@ namespace Spider;
 use EasySwoole\Component\Singleton;
 use EasySwoole\EasySwoole\ServerManager;
 use EasySwoole\FastCache\Cache;
+use EasySwoole\Redis\Config\RedisConfig;
+use EasySwoole\RedisPool\Redis;
 use Spider\Config\Config;
 use Spider\Process\ConsumeProcess;
 use Spider\Process\ProductProcess;
-use Spider\Queue\FastCache;
+use Spider\Queue\FastCacheQueue;
+use Spider\Queue\RedisQueue;
 
 class Spider
 {
@@ -55,10 +58,15 @@ class Spider
                     Cache::getInstance()
                         ->setTempDir(EASYSWOOLE_TEMP_DIR)
                         ->attachToServer($swooleServer);
-                    $this->config->setQueue(new FastCache());
+                    $this->config->setQueue(new FastCacheQueue());
                     break;
                 case Config::QUEUE_TYPE_REDIS:
-
+                    $queueConfig =  $this->config->getQueueConfig();
+                    if (empty($config)) {
+                        $queueConfig = new RedisConfig();
+                    }
+                    Redis::getInstance()->register('redis', $queueConfig);
+                    $this->config->setQueue(new RedisQueue());
                     break;
                 case Config::QUEUE_TYPE_RABBITMQ:
 

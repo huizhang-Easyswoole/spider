@@ -10,7 +10,7 @@ namespace Spider\Queue;
 use EasySwoole\FastCache\Cache;
 use Spider\Hole\QueueInterface;
 
-class FastCache implements QueueInterface
+class FastCacheQueue implements QueueInterface
 {
 
     public function push($key, $value)
