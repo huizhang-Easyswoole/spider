@@ -3,16 +3,16 @@
  * @CreateTime:   2020/2/16 下午10:45
  * @Author:       huizhang  <tuzisir@163.com>
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
- * @Description:
+ * @Description:  消费者进程
  */
 namespace Spider\Process;
 
 use EasySwoole\Component\Process\AbstractProcess;
 use Spider\Config\Config;
+use Swoole\Coroutine;
 
 class ConsumeProcess extends AbstractProcess
 {
-    public const ES_SPIDER_CONSUME_QUEUE='ES_SPIDER_CONSUME_QUEUE';
 
     protected function run($arg)
     {
@@ -21,8 +21,9 @@ class ConsumeProcess extends AbstractProcess
         for ($i=0;$i<$config->getConsumeCoroutineNum();$i++) {
             go(function () use ($config){
                 while (true) {
-                    $data = $config->getQueue()->pop(self::ES_SPIDER_CONSUME_QUEUE);
+                    $data = $config->getQueue()->pop($config->getConsumeQueueKey());
                     if (empty($data)) {
+                        Coroutine::sleep(0.1);
                         continue;
                     }
                     $config->getConsume()->consume(json_decode($data, true));

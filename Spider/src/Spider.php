@@ -23,14 +23,14 @@ class Spider
     /**
      * @var $config Config
      */
-    protected $config;
+    private $config;
 
     /**
      * 设置配置
      *
      * @param Config $config
+     * CreateTime: 2020/2/22 下午3:46
      * @return Spider
-     * CreateTime: 2020/2/22 下午3:01
      */
     public function setConfig(Config $config) : Spider
     {
@@ -43,14 +43,10 @@ class Spider
      *
      * @param null|\swoole_server|\swoole_server_port|\swoole_websocket_server|\swoole_http_server $swooleServer
      * CreateTime: 2020/2/22 下午2:45
+     * @return Spider
      */
     public function attachProcess($swooleServer)
     {
-        // 生产者进程
-        $swooleServer->addProcess((new ProductProcess())->getProcess());
-
-        // 消费者进程
-        $swooleServer->addProcess((new ConsumeProcess())->getProcess());
 
         // 队列
         try {
@@ -58,7 +54,7 @@ class Spider
                 case Config::QUEUE_TYPE_FAST_CACHE:
                     Cache::getInstance()
                         ->setTempDir(EASYSWOOLE_TEMP_DIR)
-                        ->attachToServer(ServerManager::getInstance()->getSwooleServer());
+                        ->attachToServer($swooleServer);
                     $this->config->setQueue(new FastCache());
                     break;
                 case Config::QUEUE_TYPE_REDIS:
@@ -75,6 +71,12 @@ class Spider
         } catch (\Exception $e) {
 
         }
+
+        // 生产者进程
+        $swooleServer->addProcess((new ProductProcess())->getProcess());
+
+        // 消费者进程
+        $swooleServer->addProcess((new ConsumeProcess())->getProcess());
 
     }
 

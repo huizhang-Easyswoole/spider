@@ -3,7 +3,7 @@
  * @CreateTime:   2020/2/16 下午11:37
  * @Author:       huizhang  <tuzisir@163.com>
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
- * @Description:
+ * @Description:  暴露给外部的队列接口
  */
 namespace Spider\Hole;
 

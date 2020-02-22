@@ -13,11 +13,12 @@ use Spider\Config;
 use Spider\Hole\ProductInterface;
 use Spider\Spider;
 use Swoole\Coroutine;
+use Spider\Config\ProductResult;
 
 class ProductTest implements ProductInterface
 {
 
-    public function product($url)
+    public function product($url):ProductResult
     {
         // TODO: Implement product() method.
         // 通过http协程客户端拿到地址内容
@@ -26,6 +27,7 @@ class ProductTest implements ProductInterface
         $ql = QueryList::html($body);
         $data = $ql->find('.artile_des img')->attrs('src');
         $nextUrl = $ql->find('.pic-footer .pic-page a')->attr('href');
-        return [$nextUrl, $data];
+        $result = new ProductResult();
+        return $result->setNexturl($nextUrl)->setConsumeData($data);
     }
 }

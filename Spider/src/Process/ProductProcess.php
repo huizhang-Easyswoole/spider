@@ -3,18 +3,18 @@
  * @CreateTime:   2020/2/16 下午10:44
  * @Author:       huizhang  <tuzisir@163.com>
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
- * @Description:  生产者自定义进程
+ * @Description:  生产者进程
  */
 namespace Spider\Process;
 
 use EasySwoole\Component\Process\AbstractProcess;
 use Spider\Config\Config;
+use Spider\Config\ProductResult;
 use Spider\Process\ConsumeProcess;
+use Swoole\Coroutine;
 
 class ProductProcess extends AbstractProcess
 {
-
-    public const ES_SPIDER_PRODUCT_QUEUE='ES_SPIDER_PRODUCT_QUEUE';
 
     protected function run($arg)
     {
@@ -23,22 +23,49 @@ class ProductProcess extends AbstractProcess
 
             $config = Config::getInstance();
 
-            $config->getQueue()->push(self::ES_SPIDER_PRODUCT_QUEUE, $config->getStartUrl());
+            // 区分是分布式或单机
+            $mainHost = $config->getMainHost();
+            if (empty($mainHost)) {
+                $config->getQueue()->push($config->getProductQueueKey(), $config->getStartUrl());
+            } else {
+                $ip = gethostbyname(gethostname());
+                if (!empty($ip) && $config->getMainHost() === $ip) {
+                    $config->getQueue()->push($config->getProductQueueKey(), $config->getStartUrl());
+                }
+            }
 
             for ($i=0;$i<$config->getProductCoroutineNum();$i++) {
                 go(function () use ($config){
                     while (true) {
 
-                        $url = $config->getQueue()->pop(self::ES_SPIDER_PRODUCT_QUEUE);
+                        $url = $config->getQueue()->pop($config->getProductQueueKey());
                         if (empty($url)) {
+                            Coroutine::sleep(0.1);
                             continue;
                         }
 
-                        [$nextUrl, $data] = $config->getProduct()->product($url);
+                        $productResult = $config->getProduct()->product($url);
 
-                        Config::getInstance()->getQueue()->push(self::ES_SPIDER_PRODUCT_QUEUE, $nextUrl);
-                        Config::getInstance()->getQueue()
-                            ->push(ConsumeProcess::ES_SPIDER_CONSUME_QUEUE, json_encode($data, JSON_UNESCAPED_UNICODE));
+                        if ($productResult instanceof ProductResult) {
+
+                            $nextUrls = $productResult->getNextUrls();
+                            if (!empty($nextUrl)) {
+                                foreach ($nextUrls as $nextUrl) {
+                                    Config::getInstance()->getQueue()->push($config->getProductQueueKey(), $nextUrl);
+                                }
+                            }
+
+                            $nextUrl = $productResult->getNexturl();
+                            if (!empty($nextUrl)) {
+                                Config::getInstance()->getQueue()->push($config->getProductQueueKey(), $nextUrl);
+                            }
+
+                            $data = $productResult->getConsumeData();
+                            if (!empty($nextUrl)) {
+                                Config::getInstance()->getQueue()
+                                    ->push($config->getConsumeQueueKey(), json_encode($data, JSON_UNESCAPED_UNICODE));
+                            }
+                        }
                     }
                 });
             }
