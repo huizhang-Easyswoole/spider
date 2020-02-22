@@ -65,7 +65,7 @@ class Spider
                     if (empty($config)) {
                         $queueConfig = new RedisConfig();
                     }
-                    Redis::getInstance()->register('redis', $queueConfig);
+                    Redis::getInstance()->register(RedisQueue::REDIS_ALIAS, $queueConfig);
                     $this->config->setQueue(new RedisQueue());
                     break;
                 case Config::QUEUE_TYPE_RABBITMQ:

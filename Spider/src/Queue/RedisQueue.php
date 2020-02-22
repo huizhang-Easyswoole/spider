@@ -13,17 +13,19 @@ use Spider\Hole\QueueInterface;
 class RedisQueue implements QueueInterface
 {
 
+    public const REDIS_ALIAS='Easyswoole-redis';
+
     public function push($key, $value)
     {
         // TODO: Implement push() method.
-        $redis = Redis::defer('redis');
+        $redis = Redis::defer(self::REDIS_ALIAS);
         $redis->lPush($key, $value);
     }
 
     public function pop($key)
     {
         // TODO: Implement pop() method.
-        $redis = Redis::defer('redis');
+        $redis = Redis::defer(self::REDIS_ALIAS);
         return $redis->lPop($key);
     }
 
