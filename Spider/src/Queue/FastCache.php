@@ -1,15 +1,16 @@
 <?php
 /**
- * @CreateTime:   2020/2/16 下午11:39
+ * @CreateTime:   2020/2/22 下午2:55
  * @Author:       huizhang  <tuzisir@163.com>
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
  * @Description:
  */
-namespace Spider;
+namespace Spider\Queue;
 
 use EasySwoole\FastCache\Cache;
+use Spider\Hole\QueueInterface;
 
-class FastCacheQueue implements QueueInterface
+class FastCache implements QueueInterface
 {
 
     public function push($key, $value)
@@ -24,8 +25,4 @@ class FastCacheQueue implements QueueInterface
         return Cache::getInstance()->deQueue($key);
     }
 
-    public function reset()
-    {
-        // TODO: Implement reset() method.
-    }
 }

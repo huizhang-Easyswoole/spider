@@ -5,10 +5,10 @@
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
  * @Description:
  */
-namespace Spider;
+namespace Spider\Process;
 
 use EasySwoole\Component\Process\AbstractProcess;
-use Swoole\Coroutine;
+use Spider\Config\Config;
 
 class ConsumeProcess extends AbstractProcess
 {
@@ -23,7 +23,6 @@ class ConsumeProcess extends AbstractProcess
                 while (true) {
                     $data = $config->getQueue()->pop(self::ES_SPIDER_CONSUME_QUEUE);
                     if (empty($data)) {
-                        Coroutine::sleep(1);
                         continue;
                     }
                     $config->getConsume()->consume(json_decode($data, true));

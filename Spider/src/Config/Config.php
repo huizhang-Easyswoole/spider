@@ -5,10 +5,12 @@
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
  * @Description:
  */
-namespace Spider;
+namespace Spider\Config;
 
 use EasySwoole\Component\Singleton;
-use Spider\ProductInterface;
+use Spider\Hole\ConsumeInterface;
+use Spider\Hole\ProductInterface;
+use Spider\Hole\QueueInterface;
 
 class Config
 {
@@ -21,10 +23,6 @@ class Config
 
     protected $consume;
 
-    protected $productTime=1;
-
-    protected $consumeTime=1;
-
     protected $queueType=1;
 
     protected $queue;
@@ -35,6 +33,8 @@ class Config
 
     public const QUEUE_TYPE_FAST_CACHE = 1;
     public const QUEUE_TYPE_REDIS = 2;
+    public const QUEUE_TYPE_RABBITMQ = 3;
+    public const QUEUE_TYPE_KAFKA = 4;
 
     /**
      * @return mixed
@@ -87,42 +87,6 @@ class Config
     public function setConsume(ConsumeInterface $consume): Config
     {
         $this->consume = $consume;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getProductTime()
-    {
-        return $this->productTime;
-    }
-
-    /**
-     * @param mixed $productTime
-     * @return Config
-     */
-    public function setProductTime($productTime): Config
-    {
-        $this->productTime = $productTime;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getConsumeTime()
-    {
-        return $this->consumeTime;
-    }
-
-    /**
-     * @param mixed $consumeTime
-     * @return Config
-     */
-    public function setConsumeTime($consumeTime): Config
-    {
-        $this->consumeTime = $consumeTime;
         return $this;
     }
 

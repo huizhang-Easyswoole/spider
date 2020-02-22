@@ -1,15 +1,14 @@
 <?php
 namespace EasySwoole\EasySwoole;
 
-
 use App\Spider\ConsumeTest;
 use App\Spider\ProductTest;
 use EasySwoole\EasySwoole\Swoole\EventRegister;
 use EasySwoole\EasySwoole\AbstractInterface\Event;
 use EasySwoole\Http\Request;
 use EasySwoole\Http\Response;
+use Spider\Config\Config;
 use Spider\Spider;
-use Spider\Config;
 
 class EasySwooleEvent implements Event
 {
@@ -24,14 +23,15 @@ class EasySwooleEvent implements Event
     {
         // TODO: Implement mainServerCreate() method.
         $config = Config::getInstance()
-            ->setStartUrl('https://www.doutula.com/article/detail/6744607')
+            ->setStartUrl('https://www.doutula.com/article/detail/1704295')
             ->setProduct(new ProductTest())
             ->setConsume(new ConsumeTest())
             ->setQueueType(Config::QUEUE_TYPE_FAST_CACHE)
             ->setProductCoroutineNum(1)
             ->setConsumeCoroutineNum(1);
-        $spider = new Spider($config);
-        $spider->run();
+        Spider::getInstance()
+            ->setConfig($config)
+            ->attachProcess(ServerManager::getInstance()->getSwooleServer());
     }
 
     public static function onRequest(Request $request, Response $response): bool

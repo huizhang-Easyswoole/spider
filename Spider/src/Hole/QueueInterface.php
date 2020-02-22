@@ -5,7 +5,7 @@
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
  * @Description:
  */
-namespace Spider;
+namespace Spider\Hole;
 
 interface QueueInterface
 {
@@ -13,5 +13,4 @@ interface QueueInterface
 
     public function pop($key);
 
-    public function reset();
 }

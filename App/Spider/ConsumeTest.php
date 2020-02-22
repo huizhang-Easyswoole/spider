@@ -7,7 +7,7 @@
  */
 namespace App\Spider;
 
-use Spider\ConsumeInterface;
+use Spider\Hole\ConsumeInterface;
 
 class ConsumeTest implements ConsumeInterface
 {

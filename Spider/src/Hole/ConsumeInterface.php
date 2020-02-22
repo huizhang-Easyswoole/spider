@@ -5,9 +5,9 @@
  * @Copyright:    copyright(2020) Easyswoole all rights reserved
  * @Description:
  */
-namespace Spider;
+namespace Spider\Hole;
 
-interface ProductInterface
+interface ConsumeInterface
 {
-    public function product($body);
+    public function consume($data);
 }
